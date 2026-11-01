@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Reports & Analytics')}"></head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: sidebar('reports')}"></aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header th:replace="~{fragments/topbar :: topbar('Reports & Analytics', 'Comprehensive operational trends, metrics, and CSV export')}"></header>
+
+        <main class="content-body">
+            <!-- Date Filter & CSV Export Toolbar -->
+            <div class="card card-custom p-4 mb-4">
+                <form th:action="@{/reports}" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold text-muted">From Date</label>
+                        <input type="date" name="startDate" id="reportStartDate" class="form-control" th:value="${startDate}">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold text-muted">To Date</label>
+                        <input type="date" name="endDate" id="reportEndDate" class="form-control" th:value="${endDate}">
+                    </div>
+
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-teal w-100">
+                            <i class="fas fa-sync-alt me-1"></i> Update Report
+                        </button>
+                    </div>
+
+                    <div class="col-md-3 text-md-end">
+                        <button type="button" class="btn btn-outline-success w-100" id="btnExportCsv">
+                            <i class="fas fa-file-csv me-1"></i> Export to CSV
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Key Analytic KPI Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Total Vehicles Parked</div>
+                            <div class="stat-value text-dark" th:text="${report.get('totalParked')}">0</div>
+                        </div>
+                        <div class="stat-icon primary"><i class="fas fa-car-side"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Completed Sessions</div>
+                            <div class="stat-value text-success" th:text="${report.get('completedSessions')}">0</div>
+                        </div>
+                        <div class="stat-icon success"><i class="fas fa-check-double"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Period Revenue</div>
+                            <div class="stat-value text-teal" th:text="'₹' + ${report.get('totalRevenue')}">₹0</div>
+                        </div>
+                        <div class="stat-icon teal"><i class="fas fa-coins"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Top Category</div>
+                            <div class="stat-value text-warning fs-4" th:text="${report.get('mostFrequentType')}">CAR</div>
+                        </div>
+                        <div class="stat-icon warning"><i class="fas fa-award"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytical Trends Table -->
+            <div class="card card-custom p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold mb-1 text-dark">Session Audit Records</h5>
+                        <p class="text-muted small mb-0">Filtered parking transactions within selected date interval</p>
+                    </div>
+                    <span class="badge bg-light text-muted border" th:text="${#lists.size(report.get('tickets'))} + ' sessions'">0 sessions</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small text-uppercase">
+                            <tr>
+                                <th>Ticket #</th>
+                                <th>Vehicle Reg</th>
+                                <th>Owner</th>
+                                <th>Type</th>
+                                <th>Bays</th>
+                                <th>Entry</th>
+                                <th>Exit</th>
+                                <th>Duration</th>
+                                <th>Revenue</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="t : ${report.get('tickets')}">
+                                <td>
+                                    <span class="font-monospace fw-bold text-dark" th:text="${t.ticketNumber}">TKT-1001</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border font-monospace" th:text="${t.vehicle.vehicleNumber}">MH-02-AB-1234</span>
+                                </td>
+                                <td th:text="${t.vehicle.ownerName}">Rahul Sharma</td>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary" th:text="${t.vehicle.vehicleType.displayName}">Car</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info text-dark" th:text="'Bay ' + ${t.allocatedSlots}">Bay 4</span>
+                                </td>
+                                <td class="small" th:text="${#temporals.format(t.entryTime, 'dd MMM, HH:mm')}">01 Nov, 10:00</td>
+                                <td class="small">
+                                    <span th:if="${t.exitTime != null}" th:text="${#temporals.format(t.exitTime, 'dd MMM, HH:mm')}">01 Nov, 13:00</span>
+                                    <span th:if="${t.exitTime == null}" class="text-muted">-</span>
+                                </td>
+                                <td class="small">
+                                    <span th:if="${t.parkingHours != null}" th:text="${t.parkingHours} + ' hrs'">3 hrs</span>
+                                    <span th:if="${t.parkingHours == null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <strong class="text-success" th:text="'₹' + ${t.totalAmount}">₹90.00</strong>
+                                </td>
+                                <td>
+                                    <span th:class="${t.ticketStatus.cssClass}" th:text="${t.ticketStatus.displayName}">Active</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(report.get('tickets'))}">
+                                <td colspan="10" class="text-center py-4 text-muted">No parking sessions found for the chosen date range.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.getElementById('btnExportCsv').addEventListener('click', () => {
+        const start = document.getElementById('reportStartDate').value;
+        const end = document.getElementById('reportEndDate').value;
+        window.location.href = `/api/reports/export-csv?startDate=${encodeURIComponent(start)}&endDate=${encodeURIComponent(end)}`;
+    });
+</script>
+</body>
+</html>
+

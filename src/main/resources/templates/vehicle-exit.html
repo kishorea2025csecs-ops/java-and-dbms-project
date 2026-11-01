@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Vehicle Exit')}"></head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: sidebar('vehicle-exit')}"></aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header th:replace="~{fragments/topbar :: topbar('Vehicle Exit & Checkout', 'Compute parking duration, apply 8-hr cap rule, and process payment')}"></header>
+
+        <main class="content-body">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <!-- Search Card -->
+                    <div class="card card-custom p-4 mb-4">
+                        <h5 class="fw-bold mb-2 text-dark">Locate Active Parking Session</h5>
+                        <p class="text-muted small mb-3">Search by Ticket ID (e.g. <code>TKT-20261102-1005</code>) or Vehicle Registration (e.g. <code>MH-14-GH-8888</code>):</p>
+                        
+                        <div class="input-group input-group-lg shadow-sm">
+                            <span class="input-group-text bg-white"><i class="fas fa-search text-teal"></i></span>
+                            <input type="text" id="exitSearchInput" class="form-control text-uppercase font-monospace" 
+                                   placeholder="ENTER TICKET ID OR REG NUMBER..." th:value="${searchKey}">
+                            <button class="btn btn-teal px-4" id="btnSearchTicket">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Exit Calculation Result Card (Hidden by default, shown when ticket located) -->
+                    <div class="card card-custom p-4 p-md-5 d-none mb-4" id="exitResultCard">
+                        <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-4">
+                            <div>
+                                <span class="badge bg-danger mb-1">Vehicle Check-Out</span>
+                                <h4 class="fw-bold mb-0 text-dark">Session Billing Computation</h4>
+                            </div>
+                            <span class="fs-4 fw-bold font-monospace text-primary" id="calcTicketNumber">TKT-XXXX</span>
+                        </div>
+
+                        <!-- Ticket Details Grid -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3">
+                                    <div class="text-muted small">Vehicle Registration</div>
+                                    <div class="fs-5 fw-bold font-monospace text-dark" id="calcVehNumber">MH-14-GH-8888</div>
+                                    <div class="small text-muted mt-1">
+                                        Owner: <strong class="text-dark" id="calcOwner">Vikram Singh</strong> 
+                                        (<span id="calcType">Car</span>)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3">
+                                    <div class="text-muted small">Allocated Parking Bay(s)</div>
+                                    <div class="fs-5 fw-bold text-teal" id="calcSlot">Bay 3</div>
+                                    <div class="small text-muted mt-1">
+                                        Hourly Rate: <strong class="text-dark" id="calcRate">₹30/hr</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-3">
+                                    <div class="text-muted small">Entry Timestamp</div>
+                                    <div class="fw-semibold text-dark" id="calcEntryTime">-</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-3">
+                                    <div class="text-muted small">Exit Timestamp</div>
+                                    <div class="fw-semibold text-dark" id="calcExitTime">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mathematical Billing Breakdown Box -->
+                        <div class="p-4 rounded-3 border mb-4" style="background-color: #f8fafc;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold text-dark mb-0">
+                                    <i class="fas fa-calculator text-teal me-2"></i>Formula Calculation Breakdown
+                                </h6>
+                                <span id="calcCapBadge" class="badge bg-warning text-dark d-none">
+                                    <i class="fas fa-shield-alt me-1"></i> 8-Hour Maximum Cap Applied!
+                                </span>
+                            </div>
+
+                            <div class="small text-muted mb-3 font-monospace">
+                                Charge = Minimum(CEILING(Duration in Hours), 8) &times; Hourly Rate
+                            </div>
+
+                            <div class="row align-items-center">
+                                <div class="col-md-7">
+                                    <div class="text-muted small">Total Elapsed Duration:</div>
+                                    <div class="fw-bold text-dark fs-6" id="calcDuration">2 hr 15 min (3 billed hrs)</div>
+                                    <div class="small text-muted mt-1">Partial hours are rounded up to the next full billing hour.</div>
+                                </div>
+
+                                <div class="col-md-5 text-md-end mt-3 mt-md-0">
+                                    <div class="text-muted small">Final Payable Charge</div>
+                                    <div class="fs-2 fw-bold text-teal" id="calcFinalAmount">₹90.00</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Simulated Payment Section -->
+                        <div class="border-top pt-4">
+                            <h6 class="fw-bold text-dark mb-3">Simulated Payment Collection</h6>
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-muted">Select Payment Method</label>
+                                    <select id="exitPaymentMethod" class="form-select">
+                                        <option value="UPI">UPI / QR Code Scan</option>
+                                        <option value="CASH">Cash at Counter</option>
+                                        <option value="CARD">Credit / Debit Card</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 d-flex justify-content-md-end mt-4">
+                                    <button class="btn btn-teal btn-lg px-4 shadow-sm w-100" id="btnProcessExit">
+                                        <i class="fas fa-check-circle me-2"></i>Confirm &amp; Collect Payment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Printable Receipt Modal -->
+<div class="modal fade" id="receiptModal" tabindex="-1" aria-labelledby="receiptModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold" id="receiptModalLabel">
+                    <i class="fas fa-receipt me-2"></i> Parking Payment Receipt
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="ticket-print-box printable-area text-center">
+                    <h4 class="fw-bold mb-0">ParkEase</h4>
+                    <p class="small text-muted mb-2">Smart Parking Management System</p>
+                    <div class="badge bg-success mb-2 px-3 py-1">PAID - TRANSACTION COMPLETED</div>
+                    
+                    <div class="border-top border-bottom py-2 my-2">
+                        <span class="small text-muted">RECEIPT NO</span>
+                        <div class="fs-5 fw-bold text-dark font-monospace" id="recNumber">REC-1001</div>
+                    </div>
+
+                    <div class="text-start small my-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Ticket Number:</span>
+                            <strong class="font-monospace text-dark" id="recTicket">TKT-1001</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Vehicle Reg:</span>
+                            <strong class="font-monospace text-dark" id="recVeh">MH-14-GH-8888</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Owner Name:</span>
+                            <span class="text-dark" id="recOwner">Vikram Singh</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Vehicle Type:</span>
+                            <span class="text-dark" id="recType">Car</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Released Bay(s):</span>
+                            <strong class="text-teal" id="recSlot">Bay 3</strong>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Entry Time:</span>
+                            <span class="text-dark" id="recEntry">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Exit Time:</span>
+                            <span class="text-dark" id="recExit">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Billed Hours:</span>
+                            <strong class="text-dark" id="recHours">3 hrs</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Hourly Rate:</span>
+                            <span class="text-dark" id="recRate">₹30/hr</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Payment Mode:</span>
+                            <span class="text-dark fw-semibold" id="recMethod">UPI</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Payment Status:</span>
+                            <span class="badge bg-success" id="recStatus">Paid</span>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between fs-5 fw-bold text-dark">
+                            <span>Total Paid:</span>
+                            <span class="text-teal" id="recAmount">₹90.00</span>
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-2 small text-muted">
+                        <p class="mb-0">Thank you for parking with ParkEase!</p>
+                        <p class="mb-0 font-monospace" id="recTime">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light no-print">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="window.print();">
+                    <i class="fas fa-print me-1"></i> Print Receipt
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<!-- Auto-trigger search if query parameter present -->
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('exitSearchInput');
+        if (searchInput && searchInput.value.trim() !== '') {
+            document.getElementById('btnSearchTicket').click();
+        }
+    });
+</script>
+</body>
+</html>
+

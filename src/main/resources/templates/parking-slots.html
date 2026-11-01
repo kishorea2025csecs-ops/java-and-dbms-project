@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Live Parking Slots')}"></head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: sidebar('parking-slots')}"></aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header th:replace="~{fragments/topbar :: topbar('Live Parking Slots', 'Real-time 20-bay layout tracking occupancy and allocation')}"></header>
+
+        <main class="content-body">
+            <!-- Filter Bar & Legend -->
+            <div class="card card-custom p-3 mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <!-- State Filters -->
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-secondary btn-sm active" onclick="filterSlots('all')">
+                            All Bays (20)
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="filterSlots('available')">
+                            <i class="fas fa-check-circle me-1"></i> Available
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="filterSlots('occupied')">
+                            <i class="fas fa-car me-1"></i> Occupied
+                        </button>
+                        <button type="button" class="btn btn-outline-dark btn-sm" onclick="filterSlots('reserved')">
+                            <i class="fas fa-ban me-1"></i> Reserved
+                        </button>
+                    </div>
+
+                    <!-- Visual Legend -->
+                    <div class="d-flex align-items-center gap-4 small">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-success rounded-circle p-1" style="width: 12px; height: 12px;"></span>
+                            <span class="text-muted">Green: Available</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-danger rounded-circle p-1" style="width: 12px; height: 12px;"></span>
+                            <span class="text-muted">Red: Occupied</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-secondary rounded-circle p-1" style="width: 12px; height: 12px;"></span>
+                            <span class="text-muted">Gray: Reserved</span>
+                        </div>
+                        <a th:href="@{/park-vehicle}" class="btn btn-sm btn-teal ms-2">
+                            <i class="fas fa-plus me-1"></i> Park Here
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exactly 20 Parking Slots Grid -->
+            <div class="slots-grid" id="slotsContainer">
+                <div th:each="slot : ${slots}" 
+                     class="slot-bay" 
+                     th:classappend="${slot.status.name().toLowerCase()}"
+                     th:attr="data-status=${slot.status.name().toLowerCase()}">
+                    
+                    <!-- Header -->
+                    <div class="slot-header">
+                        <span class="slot-number" th:text="${slot.displayNumber}">SLOT-01</span>
+                        <span class="slot-status-pill" 
+                              th:classappend="${slot.status.name().toLowerCase()}"
+                              th:text="${slot.status.displayName}">Available</span>
+                    </div>
+
+                    <!-- Body Content -->
+                    <div class="slot-body">
+                        <!-- If Occupied -->
+                        <div th:if="${slot.status.name() == 'OCCUPIED' and slot.currentVehicle != null}">
+                            <div class="slot-veh-num font-monospace" th:text="${slot.currentVehicle.vehicleNumber}">MH-12-AB-1234</div>
+                            <div class="slot-veh-owner">
+                                <i class="fas fa-user-circle me-1"></i><span th:text="${slot.currentVehicle.ownerName}">Owner</span>
+                            </div>
+                            <div class="small mt-1">
+                                <span class="badge bg-light text-dark border">
+                                    <i class="fas fa-car me-1"></i>
+                                    <span th:text="${slot.currentVehicle.vehicleType.displayName}">Car</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- If Available -->
+                        <div th:if="${slot.status.name() == 'AVAILABLE'}" class="text-center py-2 text-success opacity-75">
+                            <i class="fas fa-parking fa-2x mb-1"></i>
+                            <div class="small fw-semibold">Ready for Parking</div>
+                        </div>
+
+                        <!-- If Reserved -->
+                        <div th:if="${slot.status.name() == 'RESERVED'}" class="text-center py-2 text-muted">
+                            <i class="fas fa-shield-alt fa-2x mb-1"></i>
+                            <div class="small fw-semibold">Reserved / Maintenance</div>
+                        </div>
+                    </div>
+
+                    <!-- Footer / Quick Action -->
+                    <div class="slot-footer pt-2 border-top">
+                        <span th:if="${slot.status.name() == 'OCCUPIED'}">
+                            <a th:href="@{/vehicle-exit(search=${slot.currentVehicle.vehicleNumber})}" class="text-danger fw-semibold text-decoration-none">
+                                <i class="fas fa-sign-out-alt me-1"></i>Process Exit
+                            </a>
+                        </span>
+                        <span th:if="${slot.status.name() == 'AVAILABLE'}">
+                            <a th:href="@{/park-vehicle}" class="text-success fw-semibold text-decoration-none">
+                                <i class="fas fa-arrow-circle-right me-1"></i>Allocate
+                            </a>
+                        </span>
+                        <span th:if="${slot.status.name() == 'RESERVED'}" class="text-muted small">
+                            Not Available
+                        </span>
+                        <span class="badge bg-light text-muted border font-monospace" th:text="${slot.displayNumber}">SLOT-01</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    function filterSlots(filter) {
+        const buttons = document.querySelectorAll('.btn-group .btn');
+        buttons.forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+
+        const bays = document.querySelectorAll('.slot-bay');
+        bays.forEach(bay => {
+            const status = bay.getAttribute('data-status');
+            if (filter === 'all' || status === filter) {
+                bay.style.display = 'flex';
+            } else {
+                bay.style.display = 'none';
+            }
+        });
+    }
+</script>
+</body>
+</html>
+

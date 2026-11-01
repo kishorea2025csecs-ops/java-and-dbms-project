@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Billing & Payments')}"></head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: sidebar('billing')}"></aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header th:replace="~{fragments/topbar :: topbar('Billing & Payments', 'Real-time financial audits, collections and simulated payment records')}"></header>
+
+        <main class="content-body">
+            <!-- 4 Revenue Metric Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Total Revenue</div>
+                            <div class="stat-value text-teal" th:text="'₹' + ${totalRevenue}">₹0.00</div>
+                        </div>
+                        <div class="stat-icon teal">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Today's Collection</div>
+                            <div class="stat-value text-success" th:text="'₹' + ${todayRevenue}">₹0.00</div>
+                        </div>
+                        <div class="stat-icon success">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Weekly Collection</div>
+                            <div class="stat-value text-primary" th:text="'₹' + ${weeklyRevenue}">₹0.00</div>
+                        </div>
+                        <div class="stat-icon primary">
+                            <i class="fas fa-calendar-week"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Monthly Collection</div>
+                            <div class="stat-value text-purple" th:text="'₹' + ${monthlyRevenue}">₹0.00</div>
+                        </div>
+                        <div class="stat-icon purple">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Breakdown by Vehicle Type -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 border-start border-4 border-primary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small fw-semibold text-uppercase">Bike / Two-Wheeler</span>
+                                <h3 class="fw-bold text-dark mt-1 mb-0" th:text="'₹' + ${revenueBreakdown.get('BIKE')}">₹20.00</h3>
+                                <div class="small text-muted mt-1">Rate: ₹10/hr • 1 Slot</div>
+                            </div>
+                            <div class="stat-icon primary"><i class="fas fa-motorcycle"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 border-start border-4 border-success">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small fw-semibold text-uppercase">Car / Four-Wheeler</span>
+                                <h3 class="fw-bold text-dark mt-1 mb-0" th:text="'₹' + ${revenueBreakdown.get('CAR')}">₹330.00</h3>
+                                <div class="small text-muted mt-1">Rate: ₹30/hr • 1 Slot</div>
+                            </div>
+                            <div class="stat-icon success"><i class="fas fa-car"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 border-start border-4 border-warning">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small fw-semibold text-uppercase">Truck / Heavy Vehicle</span>
+                                <h3 class="fw-bold text-dark mt-1 mb-0" th:text="'₹' + ${revenueBreakdown.get('TRUCK')}">₹240.00</h3>
+                                <div class="small text-muted mt-1">Rate: ₹60/hr • 2 Consecutive Slots</div>
+                            </div>
+                            <div class="stat-icon warning"><i class="fas fa-truck"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Transaction Log Table -->
+            <div class="card card-custom p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold mb-1 text-dark">Payment Transactions History</h5>
+                        <p class="text-muted small mb-0">Direct MySQL records from the <code>payments</code> table</p>
+                    </div>
+                    <span class="badge bg-light text-muted border px-3 py-2">
+                        <i class="fas fa-database text-teal me-1"></i> MySQL Table: payments
+                    </span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small text-uppercase">
+                            <tr>
+                                <th>Payment ID</th>
+                                <th>Ticket ID</th>
+                                <th>Vehicle Reg</th>
+                                <th>Owner</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="p : ${payments}">
+                                <td>
+                                    <span class="fw-bold font-monospace text-dark" th:text="'PAY-#' + ${p.paymentId}">PAY-#1</span>
+                                </td>
+                                <td>
+                                    <span class="font-monospace text-primary" th:text="${p.ticket.ticketNumber}">TKT-1001</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border font-monospace" th:text="${p.ticket.vehicle.vehicleNumber}">MH-02-AB-1234</span>
+                                </td>
+                                <td th:text="${p.ticket.vehicle.ownerName}">Rahul Sharma</td>
+                                <td>
+                                    <span class="fw-bold text-success fs-6" th:text="'₹' + ${p.amount}">₹90.00</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        <i class="fas me-1" th:classappend="${p.paymentMethod.iconClass}"></i>
+                                        <span th:text="${p.paymentMethod.description}">UPI</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span th:class="${p.paymentStatus.cssClass}" th:text="${p.paymentStatus.displayName}">PAID</span>
+                                </td>
+                                <td class="small text-muted" th:text="${#temporals.format(p.paymentTime, 'dd MMM yyyy, HH:mm:ss')}">
+                                    01 Nov 2026, 13:00:00
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(payments)}">
+                                <td colspan="8" class="text-center py-4 text-muted">No payment transactions recorded yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>
+

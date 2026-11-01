@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<header th:fragment="topbar(pageTitle, pageSubtitle)" class="topbar">
+    <div class="topbar-left">
+        <button class="btn btn-sm btn-outline-secondary d-md-none me-2" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="topbar-title">
+            <h2 th:text="${pageTitle}">Dashboard</h2>
+            <p th:text="${pageSubtitle}">Smart Parking. Easy Management.</p>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="d-none d-sm-flex align-items-center gap-2 border px-3 py-1 rounded-pill bg-light text-muted small">
+            <span class="badge bg-success rounded-circle p-1"></span>
+            <span>MySQL: <strong class="text-dark">Connected</strong></span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a th:href="@{/park-vehicle}" class="btn btn-sm btn-teal shadow-sm">
+                <i class="fas fa-plus-circle me-1"></i> Park Vehicle
+            </a>
+            <a th:href="@{/vehicle-exit}" class="btn btn-sm btn-outline-danger shadow-sm">
+                <i class="fas fa-sign-out-alt me-1"></i> Exit
+            </a>
+        </div>
+    </div>
+</header>
+</html>
+

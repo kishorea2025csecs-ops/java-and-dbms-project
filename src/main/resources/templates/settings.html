@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Settings')}"></head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: sidebar('settings')}"></aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header th:replace="~{fragments/topbar :: topbar('System Settings', 'Configure pricing tariffs, parking capacity, and database properties')}"></header>
+
+        <main class="content-body">
+            <div class="row g-4">
+                <!-- Vehicle Rates Configuration -->
+                <div class="col-lg-7">
+                    <div class="card card-custom p-4">
+                        <div class="d-flex align-items-center gap-3 mb-4 pb-2 border-bottom">
+                            <div class="stat-icon teal"><i class="fas fa-tags"></i></div>
+                            <div>
+                                <h5 class="fw-bold mb-1 text-dark">Vehicle Hourly Rates &amp; Slot Rules</h5>
+                                <p class="text-muted small mb-0">Dynamic pricing saved directly to MySQL <code>vehicle_rates</code> table</p>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="table-light small text-uppercase">
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Required Bays</th>
+                                        <th>Current Rate (₹/hr)</th>
+                                        <th class="text-end">Update</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="r : ${rates}">
+                                        <td>
+                                            <span class="fw-bold text-dark" th:text="${r.vehicleType.displayName}">Bike</span>
+                                            <div class="text-muted small" th:text="${r.vehicleType.name()}">BIKE</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary" th:text="${r.slotsRequired} + ' bay(s)'">1 bay</span>
+                                        </td>
+                                        <td>
+                                            <div class="input-group input-group-sm" style="max-width: 140px;">
+                                                <span class="input-group-text">₹</span>
+                                                <input type="number" step="5" min="5" max="500" class="form-control fw-bold" 
+                                                       th:id="'rateInput_' + ${r.vehicleType.name()}" 
+                                                       th:value="${r.hourlyRate}">
+                                            </div>
+                                        </td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-teal btn-update-rate" 
+                                                    th:data-type="${r.vehicleType.name()}">
+                                                <i class="fas fa-save me-1"></i> Save
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 mt-3 small text-muted">
+                            <i class="fas fa-shield-alt text-teal me-1"></i> <strong>Note on 8-Hour Rule:</strong>
+                            No matter the hourly rate, vehicle parking charges are capped at a maximum of 8 chargeable hours per 24-hour cycle.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Info Card -->
+                <div class="col-lg-5">
+                    <div class="card card-custom p-4 mb-4">
+                        <h5 class="fw-bold text-dark mb-3"><i class="fas fa-server text-teal me-2"></i>System Specifications</h5>
+                        <ul class="list-group list-group-flush small">
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Application:</span>
+                                <strong>ParkEase v1.0.0</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Architecture:</span>
+                                <span>Spring Boot 3 + MVC + Data JPA</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Database Name:</span>
+                                <strong class="font-monospace text-teal">parkease_db</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">DBMS Engine:</span>
+                                <span>MySQL 8 (InnoDB Engine)</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Total Bay Capacity:</span>
+                                <span class="badge bg-primary">20 Slots Fixed</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Admin Account:</span>
+                                <span class="badge bg-dark">admin (Active)</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card card-custom p-4 bg-navy text-white" style="background-color: var(--primary-navy);">
+                        <h6 class="fw-bold text-teal mb-2"><i class="fas fa-graduation-cap me-2"></i>Academic Project Notes</h6>
+                        <p class="small text-light mb-0" style="opacity: 0.85;">
+                            This project complies with all Java OOP (Encapsulation, Inheritance, Polymorphism, Abstraction, Enums, Interfaces, Exception Handling) and Relational DBMS criteria (Keys, Constraints, Joins, Transactions).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-update-rate');
+        if (!btn) return;
+        updateRate(btn.dataset.type);
+    });
+
+    async function updateRate(type) {
+        const input = document.getElementById('rateInput_' + type);
+        const newRate = parseFloat(input.value);
+
+        if (isNaN(newRate) || newRate <= 0) {
+            showToast('Please enter a valid positive rate', 'danger');
+            return;
+        }
+
+        try {
+            const formData = new URLSearchParams();
+            formData.append('type', type);
+            formData.append('rate', newRate);
+
+            const resp = await fetch('/api/settings/rates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+
+            const data = await resp.json();
+            if (resp.ok && data.success) {
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message || 'Failed to update rate', 'danger');
+            }
+        } catch (err) {
+            showToast('Error updating rate', 'danger');
+        }
+    }
+</script>
+</body>
+</html>
+

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Database Records')}"></head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: sidebar('database-records')}"></aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header th:replace="~{fragments/topbar :: topbar('Database Records & Schema', 'DBMS Academic Inspector - Relational tables in MySQL (parkease_db)')}"></header>
+
+        <main class="content-body">
+            <!-- Table Row Count Summary Badges -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-2 col-sm-4 col-6">
+                    <div class="p-3 bg-white border rounded-3 text-center">
+                        <div class="small text-muted fw-semibold">users</div>
+                        <div class="fs-4 fw-bold text-dark" th:text="${counts.get('users')}">1</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-4 col-6">
+                    <div class="p-3 bg-white border rounded-3 text-center">
+                        <div class="small text-muted fw-semibold">vehicles</div>
+                        <div class="fs-4 fw-bold text-teal" th:text="${counts.get('vehicles')}">6</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-4 col-6">
+                    <div class="p-3 bg-white border rounded-3 text-center">
+                        <div class="small text-muted fw-semibold">parking_slots</div>
+                        <div class="fs-4 fw-bold text-primary" th:text="${counts.get('parking_slots')}">20</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-4 col-6">
+                    <div class="p-3 bg-white border rounded-3 text-center">
+                        <div class="small text-muted fw-semibold">parking_tickets</div>
+                        <div class="fs-4 fw-bold text-success" th:text="${counts.get('parking_tickets')}">6</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-4 col-6">
+                    <div class="p-3 bg-white border rounded-3 text-center">
+                        <div class="small text-muted fw-semibold">payments</div>
+                        <div class="fs-4 fw-bold text-warning" th:text="${counts.get('payments')}">4</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-4 col-6">
+                    <div class="p-3 bg-white border rounded-3 text-center">
+                        <div class="small text-muted fw-semibold">vehicle_rates</div>
+                        <div class="fs-4 fw-bold text-purple" th:text="${counts.get('vehicle_rates')}">3</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabbed Table Viewer -->
+            <div class="card card-custom p-4">
+                <ul class="nav nav-pills mb-4 border-bottom pb-3" id="dbTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-slots">
+                            <i class="fas fa-th me-1"></i> parking_slots (20)
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-tickets">
+                            <i class="fas fa-ticket-alt me-1"></i> parking_tickets
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-vehicles">
+                            <i class="fas fa-car me-1"></i> vehicles
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-payments">
+                            <i class="fas fa-money-check-alt me-1"></i> payments
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-rates">
+                            <i class="fas fa-tags me-1"></i> vehicle_rates
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-users">
+                            <i class="fas fa-users-cog me-1"></i> users
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link text-warning" data-bs-toggle="pill" data-bs-target="#tab-queries">
+                            <i class="fas fa-code me-1"></i> Academic SQL Joins
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="dbTabsContent">
+                    <!-- Tab 1: parking_slots -->
+                    <div class="tab-pane fade show active" id="tab-slots">
+                        <h6 class="fw-bold text-dark mb-2">TABLE: <code>parking_slots</code></h6>
+                        <div class="small text-muted mb-3 font-monospace">Columns: slot_id (PK), slot_number (UNIQUE), status, current_vehicle_id (FK to vehicles)</div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-hover align-middle">
+                                <thead class="table-dark small">
+                                    <tr>
+                                        <th>slot_id (PK)</th>
+                                        <th>slot_number (UNIQUE)</th>
+                                        <th>status</th>
+                                        <th>current_vehicle_id (FK)</th>
+                                        <th>Occupying Vehicle Number</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="s : ${slots}">
+                                        <td class="font-monospace" th:text="${s.slotId}">1</td>
+                                        <td class="fw-bold" th:text="${s.slotNumber}">1</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${s.status.name() == 'AVAILABLE' ? 'bg-success' : s.status.name() == 'OCCUPIED' ? 'bg-danger' : 'bg-secondary'}" th:text="${s.status}">AVAILABLE</span>
+                                        </td>
+                                        <td class="font-monospace" th:text="${s.currentVehicle != null ? s.currentVehicle.vehicleId : 'NULL'}">NULL</td>
+                                        <td class="font-monospace text-primary" th:text="${s.currentVehicle != null ? s.currentVehicle.vehicleNumber : '-'}">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: parking_tickets -->
+                    <div class="tab-pane fade" id="tab-tickets">
+                        <h6 class="fw-bold text-dark mb-2">TABLE: <code>parking_tickets</code></h6>
+                        <div class="small text-muted mb-3 font-monospace">Columns: ticket_id (PK), ticket_number (UNIQUE), vehicle_id (FK), entry_time, exit_time, parking_hours, allocated_slots, total_amount, ticket_status</div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-hover align-middle">
+                                <thead class="table-dark small">
+                                    <tr>
+                                        <th>ticket_id</th>
+                                        <th>ticket_number</th>
+                                        <th>vehicle_id (FK)</th>
+                                        <th>allocated_slots</th>
+                                        <th>entry_time</th>
+                                        <th>exit_time</th>
+                                        <th>hours</th>
+                                        <th>total_amount</th>
+                                        <th>ticket_status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="t : ${tickets}">
+                                        <td class="font-monospace" th:text="${t.ticketId}">1</td>
+                                        <td class="font-monospace fw-bold" th:text="${t.ticketNumber}">TKT-1001</td>
+                                        <td class="font-monospace" th:text="${t.vehicle.vehicleId}">1</td>
+                                        <td class="fw-bold text-teal" th:text="${t.allocatedSlots}">4</td>
+                                        <td class="small" th:text="${t.entryTime}">2026-11-01 10:00:00</td>
+                                        <td class="small" th:text="${t.exitTime != null ? t.exitTime : 'NULL'}">NULL</td>
+                                        <td th:text="${t.parkingHours != null ? t.parkingHours : 'NULL'}">3</td>
+                                        <td class="fw-bold text-success" th:text="'₹' + ${t.totalAmount}">₹90.00</td>
+                                        <td><span th:class="${t.ticketStatus.cssClass}" th:text="${t.ticketStatus}">ACTIVE</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: vehicles -->
+                    <div class="tab-pane fade" id="tab-vehicles">
+                        <h6 class="fw-bold text-dark mb-2">TABLE: <code>vehicles</code></h6>
+                        <div class="small text-muted mb-3 font-monospace">Columns: vehicle_id (PK), owner_name, vehicle_number (UNIQUE), vehicle_type, contact_number, created_at</div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-hover align-middle">
+                                <thead class="table-dark small">
+                                    <tr>
+                                        <th>vehicle_id</th>
+                                        <th>vehicle_number (UNIQUE)</th>
+                                        <th>owner_name</th>
+                                        <th>vehicle_type</th>
+                                        <th>contact_number</th>
+                                        <th>created_at</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="v : ${vehicles}">
+                                        <td class="font-monospace" th:text="${v.vehicleId}">1</td>
+                                        <td class="font-monospace fw-bold" th:text="${v.vehicleNumber}">MH-02-AB-1234</td>
+                                        <td th:text="${v.ownerName}">Rahul Sharma</td>
+                                        <td><span class="badge bg-light text-dark border" th:text="${v.vehicleType}">CAR</span></td>
+                                        <td class="font-monospace" th:text="${v.contactNumber}">9876543210</td>
+                                        <td class="small text-muted" th:text="${v.createdAt}">2026-11-01 09:30:00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: payments -->
+                    <div class="tab-pane fade" id="tab-payments">
+                        <h6 class="fw-bold text-dark mb-2">TABLE: <code>payments</code></h6>
+                        <div class="small text-muted mb-3 font-monospace">Columns: payment_id (PK), ticket_id (FK), amount, payment_method, payment_status, payment_time</div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-hover align-middle">
+                                <thead class="table-dark small">
+                                    <tr>
+                                        <th>payment_id</th>
+                                        <th>ticket_id (FK)</th>
+                                        <th>amount</th>
+                                        <th>payment_method</th>
+                                        <th>payment_status</th>
+                                        <th>payment_time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="p : ${payments}">
+                                        <td class="font-monospace" th:text="${p.paymentId}">1</td>
+                                        <td class="font-monospace fw-bold text-primary" th:text="${p.ticket.ticketId}">1</td>
+                                        <td class="fw-bold text-success" th:text="'₹' + ${p.amount}">₹90.00</td>
+                                        <td th:text="${p.paymentMethod}">UPI</td>
+                                        <td><span class="badge bg-success" th:text="${p.paymentStatus}">PAID</span></td>
+                                        <td class="small text-muted" th:text="${p.paymentTime}">2026-11-01 13:00:00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 5: vehicle_rates -->
+                    <div class="tab-pane fade" id="tab-rates">
+                        <h6 class="fw-bold text-dark mb-2">TABLE: <code>vehicle_rates</code></h6>
+                        <div class="small text-muted mb-3 font-monospace">Columns: rate_id (PK), vehicle_type (UNIQUE), hourly_rate, slots_required</div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-hover align-middle">
+                                <thead class="table-dark small">
+                                    <tr>
+                                        <th>rate_id</th>
+                                        <th>vehicle_type (UNIQUE)</th>
+                                        <th>hourly_rate (₹/hr)</th>
+                                        <th>slots_required</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="r : ${rates}">
+                                        <td class="font-monospace" th:text="${r.rateId}">1</td>
+                                        <td class="fw-bold" th:text="${r.vehicleType}">BIKE</td>
+                                        <td class="fw-bold text-teal" th:text="'₹' + ${r.hourlyRate}">₹10.00</td>
+                                        <td th:text="${r.slotsRequired}">1</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 6: users -->
+                    <div class="tab-pane fade" id="tab-users">
+                        <h6 class="fw-bold text-dark mb-2">TABLE: <code>users</code></h6>
+                        <div class="small text-muted mb-3 font-monospace">Columns: user_id (PK), username (UNIQUE), password_hash, role, created_at</div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-hover align-middle">
+                                <thead class="table-dark small">
+                                    <tr>
+                                        <th>user_id</th>
+                                        <th>username (UNIQUE)</th>
+                                        <th>role</th>
+                                        <th>password_hash (SHA-256)</th>
+                                        <th>created_at</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="u : ${users}">
+                                        <td class="font-monospace" th:text="${u.userId}">1</td>
+                                        <td class="fw-bold" th:text="${u.username}">admin</td>
+                                        <td><span class="badge bg-primary" th:text="${u.role}">ROLE_ADMIN</span></td>
+                                        <td class="font-monospace small text-muted" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" th:text="${u.passwordHash}">hash</td>
+                                        <td class="small text-muted" th:text="${u.createdAt}">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 7: Academic SQL Joins Demonstration -->
+                    <div class="tab-pane fade" id="tab-queries">
+                        <h6 class="fw-bold text-dark mb-3">Academic Relational Queries &amp; SQL Constructs</h6>
+                        
+                        <div class="p-3 bg-light rounded-3 border mb-3">
+                            <div class="fw-bold text-teal mb-1">1. Multiple Table INNER JOIN (Tickets + Vehicles + Payments)</div>
+                            <pre class="bg-dark text-white p-3 rounded small font-monospace mb-0"><code>SELECT 
+    t.ticket_number, 
+    v.vehicle_number, 
+    v.owner_name, 
+    v.vehicle_type, 
+    t.allocated_slots,
+    p.amount,
+    p.payment_method
+FROM parking_tickets t
+INNER JOIN vehicles v ON t.vehicle_id = v.vehicle_id
+LEFT JOIN payments p ON t.ticket_id = p.ticket_id;</code></pre>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 border mb-3">
+                            <div class="fw-bold text-teal mb-1">2. Aggregate Functions &amp; GROUP BY (Revenue Distribution)</div>
+                            <pre class="bg-dark text-white p-3 rounded small font-monospace mb-0"><code>SELECT 
+    v.vehicle_type,
+    COUNT(t.ticket_id) AS total_sessions,
+    COALESCE(SUM(p.amount), 0.00) AS total_collected
+FROM vehicles v
+JOIN parking_tickets t ON v.vehicle_id = t.vehicle_id
+JOIN payments p ON t.ticket_id = p.ticket_id
+WHERE p.payment_status = 'PAID'
+GROUP BY v.vehicle_type
+ORDER BY total_collected DESC;</code></pre>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 border">
+                            <div class="fw-bold text-teal mb-1">3. Relational Subquery (Find Slots with Active Car Parking)</div>
+                            <pre class="bg-dark text-white p-3 rounded small font-monospace mb-0"><code>SELECT slot_number, status 
+FROM parking_slots 
+WHERE current_vehicle_id IN (
+    SELECT vehicle_id FROM vehicles WHERE vehicle_type = 'CAR'
+);</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>
+

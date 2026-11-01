@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Dashboard')}"></head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: sidebar('dashboard')}"></aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header th:replace="~{fragments/topbar :: topbar('Dashboard Overview', 'Real-time parking analytics &amp; operational metrics')}"></header>
+
+        <main class="content-body">
+            <!-- 6 Key Statistics Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Total Slots</div>
+                            <div class="stat-value" th:text="${stats.totalSlots}">20</div>
+                        </div>
+                        <div class="stat-icon primary">
+                            <i class="fas fa-th"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Occupied</div>
+                            <div class="stat-value text-danger" th:text="${stats.occupiedSlots}">3</div>
+                        </div>
+                        <div class="stat-icon danger">
+                            <i class="fas fa-car"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Available</div>
+                            <div class="stat-value text-success" th:text="${stats.availableSlots}">16</div>
+                        </div>
+                        <div class="stat-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Parked Today</div>
+                            <div class="stat-value text-primary" th:text="${stats.vehiclesParkedToday}">0</div>
+                        </div>
+                        <div class="stat-icon teal">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Revenue Today</div>
+                            <div class="stat-value text-dark" th:text="'₹' + ${stats.revenueCollectedToday}">₹0</div>
+                        </div>
+                        <div class="stat-icon warning">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Active Tickets</div>
+                            <div class="stat-value text-teal" th:text="${stats.activeTickets}">2</div>
+                        </div>
+                        <div class="stat-icon purple">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row g-4 mb-4">
+                <!-- Daily Revenue Bar Chart -->
+                <div class="col-lg-8">
+                    <div class="card card-custom p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1 text-dark">Daily Revenue Collection</h5>
+                                <p class="text-muted small mb-0">Daily income trend from completed parking sessions (Last 7 Days)</p>
+                            </div>
+                            <span class="badge bg-light text-dark border px-3 py-2">
+                                <i class="fas fa-calendar-alt text-teal me-1"></i> Recent Trend
+                            </span>
+                        </div>
+                        <div style="height: 280px; position: relative;">
+                            <canvas id="revenueBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Occupancy Donut Chart -->
+                <div class="col-lg-4">
+                    <div class="card card-custom p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1 text-dark">Slot Occupancy</h5>
+                                <p class="text-muted small mb-0">Live status of 20 parking bays</p>
+                            </div>
+                            <span class="badge bg-success" th:text="${stats.occupancyPercentage} + '% Full'">15%</span>
+                        </div>
+                        <div style="height: 220px; position: relative;" class="my-auto">
+                            <canvas id="occupancyDoughnutChart"></canvas>
+                        </div>
+                        <div class="d-flex justify-content-around text-center pt-3 border-top mt-3 small">
+                            <div>
+                                <div class="text-muted">Available</div>
+                                <strong class="text-success fs-6" th:text="${stats.availableSlots}">16</strong>
+                            </div>
+                            <div>
+                                <div class="text-muted">Occupied</div>
+                                <strong class="text-danger fs-6" th:text="${stats.occupiedSlots}">3</strong>
+                            </div>
+                            <div>
+                                <div class="text-muted">Reserved</div>
+                                <strong class="text-secondary fs-6" th:text="${stats.reservedSlots}">1</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Table & Category Breakdown -->
+            <div class="row g-4">
+                <!-- Recent Parking Activity Table -->
+                <div class="col-lg-8">
+                    <div class="card card-custom p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1 text-dark">Recent Parking Activity</h5>
+                                <p class="text-muted small mb-0">Latest vehicle registrations and check-outs</p>
+                            </div>
+                            <a th:href="@{/tickets}" class="btn btn-sm btn-outline-secondary">View All Tickets</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light small text-uppercase">
+                                    <tr>
+                                        <th>Ticket #</th>
+                                        <th>Vehicle Number</th>
+                                        <th>Owner</th>
+                                        <th>Type</th>
+                                        <th>Slot</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="ticket : ${recentTickets}">
+                                        <td>
+                                            <span class="fw-bold text-dark" th:text="${ticket.ticketNumber}">TKT-1001</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border font-monospace" th:text="${ticket.vehicle.vehicleNumber}">MH-02-AB-1234</span>
+                                        </td>
+                                        <td th:text="${ticket.vehicle.ownerName}">Rahul Sharma</td>
+                                        <td>
+                                            <span class="small" th:text="${ticket.vehicle.vehicleType.displayName}">Car</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary" th:text="'Bay ' + ${ticket.allocatedSlots}">Bay 4</span>
+                                        </td>
+                                        <td>
+                                            <span th:class="${ticket.ticketStatus.cssClass}" th:text="${ticket.ticketStatus.displayName}">Active</span>
+                                        </td>
+                                        <td>
+                                            <a th:if="${ticket.ticketStatus.name() == 'ACTIVE'}" 
+                                               th:href="@{/vehicle-exit(search=${ticket.ticketNumber})}" 
+                                               class="btn btn-sm btn-outline-danger py-1 px-2">Exit</a>
+                                            <span th:if="${ticket.ticketStatus.name() == 'COMPLETED'}" 
+                                                  class="text-muted small">Paid ₹<span th:text="${ticket.totalAmount}">90</span></span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(recentTickets)}">
+                                        <td colspan="7" class="text-center py-4 text-muted">No parking transactions yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Category Distribution -->
+                <div class="col-lg-4">
+                    <div class="card card-custom p-4">
+                        <h5 class="fw-bold mb-1 text-dark">Vehicle Categories</h5>
+                        <p class="text-muted small mb-3">Proportion by vehicle class</p>
+                        <div style="height: 220px; position: relative;">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                        <div class="mt-4 pt-3 border-top small">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span><i class="fas fa-motorcycle text-primary me-2"></i>Two-Wheelers (Bikes)</span>
+                                <strong class="text-dark">₹10/hr (1 Bay)</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span><i class="fas fa-car text-success me-2"></i>Four-Wheelers (Cars)</span>
+                                <strong class="text-dark">₹30/hr (1 Bay)</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-truck text-warning me-2"></i>Heavy Vehicles (Trucks)</span>
+                                <strong class="text-dark">₹60/hr (2 Bays)</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<!-- Chart initialization using backend MySQL data -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+    const statsData = /*[[${stats}]]*/ {};
+
+    // 1. Revenue Bar Chart
+    const revLabels = statsData.dailyRevenueLast7Days ? Object.keys(statsData.dailyRevenueLast7Days) : [];
+    const revValues = statsData.dailyRevenueLast7Days ? Object.values(statsData.dailyRevenueLast7Days) : [];
+
+    const revCtx = document.getElementById('revenueBarChart');
+    if (revCtx) {
+        new Chart(revCtx, {
+            type: 'bar',
+            data: {
+                labels: revLabels,
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: revValues,
+                    backgroundColor: '#0d9488',
+                    borderRadius: 6,
+                    barThickness: 28
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: (val) => '₹' + val }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Occupancy Doughnut
+    const occCtx = document.getElementById('occupancyDoughnutChart');
+    if (occCtx) {
+        new Chart(occCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Available', 'Occupied', 'Reserved'],
+                datasets: [{
+                    data: [statsData.availableSlots || 0, statsData.occupiedSlots || 0, statsData.reservedSlots || 0],
+                    backgroundColor: ['#22c55e', '#ef4444', '#94a3b8'],
+                    borderWidth: 2,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } },
+                cutout: '70%'
+            }
+        });
+    }
+
+    // 3. Category Distribution Doughnut
+    const catLabels = statsData.vehicleCategoryDistribution ? Object.keys(statsData.vehicleCategoryDistribution) : ['BIKE', 'CAR', 'TRUCK'];
+    const catValues = statsData.vehicleCategoryDistribution ? Object.values(statsData.vehicleCategoryDistribution) : [1, 3, 1];
+
+    const catCtx = document.getElementById('categoryChart');
+    if (catCtx) {
+        new Chart(catCtx, {
+            type: 'pie',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    data: catValues,
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    }
+/*]]>*/
+</script>
+</body>
+</html>
+

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Vehicle Management')}"></head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: sidebar('vehicles')}"></aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header th:replace="~{fragments/topbar :: topbar('Vehicle Management', 'Registered vehicle profiles and customer directory')}"></header>
+
+        <main class="content-body">
+            <div class="card card-custom p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold mb-1 text-dark">Vehicles Directory</h5>
+                        <p class="text-muted small mb-0">Database of all vehicles registered in ParkEase</p>
+                    </div>
+                    <a th:href="@{/park-vehicle}" class="btn btn-teal btn-sm">
+                        <i class="fas fa-plus me-1"></i> Register New Vehicle
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small text-uppercase">
+                            <tr>
+                                <th>#</th>
+                                <th>Registration Number</th>
+                                <th>Owner Name</th>
+                                <th>Category</th>
+                                <th>Contact Number</th>
+                                <th>First Registered</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="veh, stat : ${vehicles}">
+                                <td class="text-muted small" th:text="${stat.count}">1</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border font-monospace fs-6" th:text="${veh.vehicleNumber}">MH-02-AB-1234</span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-dark" th:text="${veh.ownerName}">Rahul Sharma</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        <i class="fas fa-car me-1 text-teal"></i>
+                                        <span th:text="${veh.vehicleType.displayName}">Car</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="small font-monospace" th:text="${veh.contactNumber}">9876543210</span>
+                                </td>
+                                <td class="small text-muted" th:text="${#temporals.format(veh.createdAt, 'dd MMM yyyy, HH:mm')}">
+                                    01 Nov 2026, 10:00
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/park-vehicle}" class="btn btn-sm btn-outline-teal py-1 px-2" title="Park This Vehicle">
+                                        <i class="fas fa-parking me-1"></i>Park
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(vehicles)}">
+                                <td colspan="7" class="text-center py-4 text-muted">No vehicles registered yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>
+

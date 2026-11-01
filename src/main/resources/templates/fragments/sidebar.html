@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<aside th:fragment="sidebar(activeNav)" class="sidebar">
+    <!-- Brand -->
+    <div class="sidebar-brand">
+        <div class="brand-icon">
+            <i class="fas fa-parking"></i>
+        </div>
+        <div class="brand-text">
+            <h1>ParkEase</h1>
+            <span>Smart Parking System</span>
+        </div>
+    </div>
+
+    <!-- Navigation List -->
+    <ul class="sidebar-nav">
+        <li class="nav-section-title">Operations</li>
+        
+        <li class="nav-item">
+            <a th:href="@{/dashboard}" class="nav-link" th:classappend="${activeNav == 'dashboard'} ? 'active' : ''">
+                <i class="fas fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a th:href="@{/park-vehicle}" class="nav-link" th:classappend="${activeNav == 'park-vehicle'} ? 'active' : ''">
+                <i class="fas fa-car-side"></i>
+                <span>Park Vehicle</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a th:href="@{/vehicle-exit}" class="nav-link" th:classappend="${activeNav == 'vehicle-exit'} ? 'active' : ''">
+                <i class="fas fa-door-open"></i>
+                <span>Vehicle Exit</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a th:href="@{/parking-slots}" class="nav-link" th:classappend="${activeNav == 'parking-slots'} ? 'active' : ''">
+                <i class="fas fa-th-large"></i>
+                <span>Live Parking Slots</span>
+            </a>
+        </li>
+
+        <li class="nav-section-title">Records &amp; Management</li>
+
+        <li class="nav-item">
+            <a th:href="@{/tickets}" class="nav-link" th:classappend="${activeNav == 'tickets'} ? 'active' : ''">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Parking Tickets</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a th:href="@{/vehicles}" class="nav-link" th:classappend="${activeNav == 'vehicles'} ? 'active' : ''">
+                <i class="fas fa-list-alt"></i>
+                <span>Vehicle Management</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a th:href="@{/billing}" class="nav-link" th:classappend="${activeNav == 'billing'} ? 'active' : ''">
+                <i class="fas fa-credit-card"></i>
+                <span>Billing &amp; Payments</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a th:href="@{/reports}" class="nav-link" th:classappend="${activeNav == 'reports'} ? 'active' : ''">
+                <i class="fas fa-chart-line"></i>
+                <span>Reports &amp; Analytics</span>
+            </a>
+        </li>
+
+        <li class="nav-section-title">System &amp; Database</li>
+
+        <li class="nav-item">
+            <a th:href="@{/database-records}" class="nav-link" th:classappend="${activeNav == 'database-records'} ? 'active' : ''">
+                <i class="fas fa-database"></i>
+                <span>Database Records</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a th:href="@{/settings}" class="nav-link" th:classappend="${activeNav == 'settings'} ? 'active' : ''">
+                <i class="fas fa-sliders-h"></i>
+                <span>Settings</span>
+            </a>
+        </li>
+
+        <li class="nav-item mt-3">
+            <a th:href="@{/logout}" class="nav-link text-danger">
+                <i class="fas fa-sign-out-alt text-danger"></i>
+                <span>Logout</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Admin User Pill -->
+    <div class="sidebar-footer">
+        <div class="admin-pill">
+            <div class="admin-avatar">A</div>
+            <div class="admin-info">
+                <div class="name">Administrator</div>
+                <div class="role">Admin Access</div>
+            </div>
+            <a th:href="@{/logout}" title="Logout" class="text-secondary"><i class="fas fa-power-off"></i></a>
+        </div>
+    </div>
+</aside>
+</html>
+
