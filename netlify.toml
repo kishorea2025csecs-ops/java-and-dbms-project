@@ -1,0 +1,62 @@
+[build]
+  publish = "public"
+
+[[redirects]]
+  from = "/"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/park-vehicle"
+  to = "/park-vehicle.html"
+  status = 200
+
+[[redirects]]
+  from = "/vehicle-exit"
+  to = "/vehicle-exit.html"
+  status = 200
+
+[[redirects]]
+  from = "/parking-slots"
+  to = "/parking-slots.html"
+  status = 200
+
+[[redirects]]
+  from = "/tickets"
+  to = "/tickets.html"
+  status = 200
+
+[[redirects]]
+  from = "/vehicles"
+  to = "/vehicles.html"
+  status = 200
+
+[[redirects]]
+  from = "/billing"
+  to = "/billing.html"
+  status = 200
+
+[[redirects]]
+  from = "/reports"
+  to = "/reports.html"
+  status = 200
+
+[[redirects]]
+  from = "/database-records"
+  to = "/database-records.html"
+  status = 200
+
+[[redirects]]
+  from = "/settings"
+  to = "/settings.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200

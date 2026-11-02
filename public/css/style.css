@@ -1,0 +1,512 @@
+/* ==============================================================================
+ * ParkEase - Smart Parking Management System Stylesheet
+ * Palette: Navy Blue (#0f172a, #1e293b), Teal Accent (#0d9488, #14b8a6), White
+ * ============================================================================== */
+
+:root {
+    --primary-navy: #0f172a;
+    --sidebar-navy: #1e293b;
+    --sidebar-hover: #334155;
+    --sidebar-active: #0d9488;
+    --accent-teal: #0d9488;
+    --accent-teal-light: #14b8a6;
+    --accent-teal-glow: rgba(13, 148, 136, 0.2);
+    --bg-light: #f8fafc;
+    --card-bg: #ffffff;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    min-height: 100vh;
+}
+
+/* ------------------------------------------------------------------------------
+ * Layout & Sidebar
+ * ------------------------------------------------------------------------------ */
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    background-color: var(--sidebar-navy);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.sidebar-brand {
+    padding: 24px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand-icon {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, var(--accent-teal), var(--accent-teal-light));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #ffffff;
+    box-shadow: 0 4px 10px var(--accent-teal-glow);
+}
+
+.brand-text h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.brand-text span {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 16px 12px;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.nav-section-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #64748b;
+    padding: 12px 12px 6px 12px;
+}
+
+.nav-item {
+    margin-bottom: 4px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nav-link i {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+    color: #94a3b8;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    background-color: var(--sidebar-hover);
+    color: #ffffff;
+}
+
+.nav-link:hover i {
+    color: var(--accent-teal-light);
+}
+
+.nav-link.active {
+    background-color: var(--sidebar-active);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px var(--accent-teal-glow);
+}
+
+.nav-link.active i {
+    color: #ffffff;
+}
+
+.sidebar-footer {
+    padding: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.admin-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.admin-info {
+    flex-grow: 1;
+    line-height: 1.2;
+}
+
+.admin-info .name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.admin-info .role {
+    font-size: 0.72rem;
+    color: #94a3b8;
+}
+
+/* ------------------------------------------------------------------------------
+ * Main Content & Topbar
+ * ------------------------------------------------------------------------------ */
+.main-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.topbar {
+    height: 70px;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.topbar-title h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--primary-navy);
+    margin: 0;
+}
+
+.topbar-title p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.content-body {
+    padding: 28px;
+    flex-grow: 1;
+}
+
+/* ------------------------------------------------------------------------------
+ * Cards & Stats
+ * ------------------------------------------------------------------------------ */
+.card-custom {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-custom:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.stat-card {
+    padding: 22px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: #ffffff;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.stat-icon.primary { background: #e0f2fe; color: #0284c7; }
+.stat-icon.success { background: #dcfce7; color: #16a34a; }
+.stat-icon.danger  { background: #fee2e2; color: #dc2626; }
+.stat-icon.warning { background: #fef3c7; color: #d97706; }
+.stat-icon.teal    { background: #ccfbf1; color: #0d9488; }
+.stat-icon.purple  { background: #f3e8ff; color: #9333ea; }
+
+.stat-content .stat-label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.stat-content .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-navy);
+    line-height: 1.2;
+    margin-top: 4px;
+}
+
+/* ------------------------------------------------------------------------------
+ * Live Parking Slots Grid
+ * ------------------------------------------------------------------------------ */
+.slots-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 1200px) {
+    .slots-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 900px) {
+    .slots-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+    .slots-grid { grid-template-columns: 1fr; }
+}
+
+.slot-bay {
+    border-radius: var(--radius-md);
+    padding: 16px;
+    border: 2px solid;
+    background: #ffffff;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 135px;
+    position: relative;
+    overflow: hidden;
+}
+
+.slot-bay.available {
+    border-color: #86efac;
+    background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+}
+.slot-bay.available:hover {
+    border-color: #22c55e;
+    box-shadow: 0 6px 14px rgba(34, 197, 94, 0.15);
+    transform: translateY(-2px);
+}
+
+.slot-bay.occupied {
+    border-color: #fca5a5;
+    background: linear-gradient(180deg, #fef2f2 0%, #ffffff 100%);
+}
+.slot-bay.occupied:hover {
+    border-color: #ef4444;
+    box-shadow: 0 6px 14px rgba(239, 68, 68, 0.15);
+    transform: translateY(-2px);
+}
+
+.slot-bay.reserved {
+    border-color: #cbd5e1;
+    background: linear-gradient(180deg, #f1f5f9 0%, #ffffff 100%);
+}
+
+.slot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slot-number {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary-navy);
+}
+
+.slot-status-pill {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+.slot-status-pill.available { background: #dcfce7; color: #15803d; }
+.slot-status-pill.occupied { background: #fee2e2; color: #b91c1c; }
+.slot-status-pill.reserved { background: #e2e8f0; color: #475569; }
+
+.slot-body {
+    margin: 10px 0;
+}
+
+.slot-veh-num {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--primary-navy);
+}
+
+.slot-veh-owner {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.slot-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------------------
+ * Badges & Buttons
+ * ------------------------------------------------------------------------------ */
+.btn-teal {
+    background-color: var(--accent-teal);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-teal:hover {
+    background-color: #0f766e;
+    color: #ffffff;
+    box-shadow: 0 4px 12px var(--accent-teal-glow);
+}
+
+.btn-navy {
+    background-color: var(--primary-navy);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+}
+
+.btn-navy:hover {
+    background-color: var(--sidebar-navy);
+    color: #ffffff;
+}
+
+.badge-active {
+    background-color: #dcfce7;
+    color: #15803d;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.badge-completed {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.badge-paid {
+    background-color: #ccfbf1;
+    color: #0f766e;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.badge-pending {
+    background-color: #fef3c7;
+    color: #b45309;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+/* ------------------------------------------------------------------------------
+ * Printable Ticket & Receipt (@media print)
+ * ------------------------------------------------------------------------------ */
+.ticket-print-box {
+    max-width: 380px;
+    margin: 0 auto;
+    padding: 24px;
+    border: 2px dashed #94a3b8;
+    border-radius: 12px;
+    background: #ffffff;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .printable-area, .printable-area * {
+        visibility: visible;
+    }
+    .printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    .no-print {
+        display: none !important;
+    }
+}
+

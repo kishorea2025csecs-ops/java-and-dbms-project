@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ParkEase Smart Parking System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body>
+<div class="app-wrapper">
+    
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <i class="fas fa-parking"></i>
+            </div>
+            <div class="brand-text">
+                <h1>ParkEase</h1>
+                <span>Smart Parking System</span>
+            </div>
+        </div>
+        <ul class="sidebar-nav">
+            <li class="nav-section-title">Operations</li>
+
+            <li class="nav-item">
+                <a href="/dashboard.html" class="nav-link active">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/park-vehicle.html" class="nav-link">
+                    <i class="fas fa-car-side"></i>
+                    <span>Park Vehicle</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/vehicle-exit.html" class="nav-link">
+                    <i class="fas fa-door-open"></i>
+                    <span>Vehicle Exit</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/parking-slots.html" class="nav-link">
+                    <i class="fas fa-th-large"></i>
+                    <span>Live Parking Slots</span>
+                </a>
+            </li>
+<li class="nav-section-title">Records & Management</li>
+
+            <li class="nav-item">
+                <a href="/tickets.html" class="nav-link">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Parking Tickets</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/vehicles.html" class="nav-link">
+                    <i class="fas fa-list-alt"></i>
+                    <span>Vehicle Management</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/billing.html" class="nav-link">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Billing & Payments</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/reports.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reports & Analytics</span>
+                </a>
+            </li>
+<li class="nav-section-title">System & Database</li>
+
+            <li class="nav-item">
+                <a href="/database-records.html" class="nav-link">
+                    <i class="fas fa-database"></i>
+                    <span>Database Records</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/settings.html" class="nav-link">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+
+            <li class="nav-item mt-3">
+                <a href="/login.html" class="nav-link text-danger">
+                    <i class="fas fa-sign-out-alt text-danger"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="main-wrapper">
+        
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="btn btn-sm btn-outline-secondary d-md-none me-2" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="topbar-title">
+                <h2>Dashboard Overview</h2>
+                <p>Real-time parking analytics &amp; operational metrics</p>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="d-none d-sm-flex align-items-center gap-2 border px-3 py-1 rounded-pill bg-light text-muted small">
+                <span class="badge bg-success rounded-circle p-1"></span>
+                <span>Deploy: <strong class="text-dark">Netlify Live</strong></span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="/park-vehicle.html" class="btn btn-sm btn-teal shadow-sm">
+                    <i class="fas fa-plus-circle me-1"></i> Park Vehicle
+                </a>
+                <a href="/vehicle-exit.html" class="btn btn-sm btn-outline-danger shadow-sm">
+                    <i class="fas fa-sign-out-alt me-1"></i> Exit
+                </a>
+            </div>
+        </div>
+    </header>
+
+        <main class="content-body">
+            <!-- 6 Key Statistics Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Total Slots</div>
+                            <div class="stat-value" id="statTotalSlots">20</div>
+                        </div>
+                        <div class="stat-icon primary"><i class="fas fa-th"></i></div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Occupied</div>
+                            <div class="stat-value text-danger" id="statOccupiedSlots">2</div>
+                        </div>
+                        <div class="stat-icon danger"><i class="fas fa-car"></i></div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Available</div>
+                            <div class="stat-value text-success" id="statAvailableSlots">18</div>
+                        </div>
+                        <div class="stat-icon success"><i class="fas fa-check-circle"></i></div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Occupancy Rate</div>
+                            <div class="stat-value text-primary" id="statOccupancyRate">10%</div>
+                        </div>
+                        <div class="stat-icon teal"><i class="fas fa-percentage"></i></div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Total Revenue</div>
+                            <div class="stat-value text-dark" id="statRevenue">₹120</div>
+                        </div>
+                        <div class="stat-icon warning"><i class="fas fa-rupee-sign"></i></div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Active Tickets</div>
+                            <div class="stat-value text-teal" id="statActiveTickets">2</div>
+                        </div>
+                        <div class="stat-icon purple"><i class="fas fa-ticket-alt"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts & Live Overview -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-8">
+                    <div class="card card-custom p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1 text-dark">Daily Revenue Collection</h5>
+                                <p class="text-muted small mb-0">Daily income trend from completed parking sessions</p>
+                            </div>
+                            <span class="badge bg-light text-dark border px-3 py-2">
+                                <i class="fas fa-calendar-alt text-teal me-1"></i> Live Analytics
+                            </span>
+                        </div>
+                        <div style="height: 280px; position: relative;">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card card-custom p-4 h-100">
+                        <h5 class="fw-bold mb-1 text-dark">Vehicle Distribution</h5>
+                        <p class="text-muted small mb-3">Active parking distribution by category</p>
+                        <div style="height: 240px; position: relative;">
+                            <canvas id="vehicleTypeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Active Tickets Table -->
+            <div class="card card-custom p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-dark">Active Parked Vehicles</h5>
+                    <a href="/tickets.html" class="btn btn-sm btn-outline-secondary">View All Tickets &rarr;</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Vehicle No.</th>
+                                <th>Owner</th>
+                                <th>Type</th>
+                                <th>Bay(s)</th>
+                                <th>Entry Time</th>
+                                <th>Rate</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentTicketsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="/js/parkease-engine.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        const toggleBtn = document.getElementById('sidebarToggle');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.toggle('d-none');
+            });
+        }
+    </script>
+    
+<script>
+    function renderDashboard() {
+        const stats = ParkEaseDB.getStats();
+        const db = ParkEaseDB.load();
+
+        document.getElementById('statTotalSlots').innerText = stats.totalSlots;
+        document.getElementById('statOccupiedSlots').innerText = stats.occupiedSlots;
+        document.getElementById('statAvailableSlots').innerText = stats.availableSlots;
+        document.getElementById('statOccupancyRate').innerText = stats.occupancyRate + '%';
+        document.getElementById('statRevenue').innerText = '₹' + stats.totalRevenue;
+        document.getElementById('statActiveTickets').innerText = stats.activeTickets;
+
+        // Render Recent Active Tickets
+        const tbody = document.getElementById('recentTicketsTable');
+        const activeTickets = db.tickets.filter(t => t.status === 'ACTIVE');
+        if (activeTickets.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-3">No active parked vehicles right now.</td></tr>';
+        } else {
+            tbody.innerHTML = activeTickets.map(t => `
+                <tr>
+                    <td><span class="badge bg-light text-dark border font-monospace">${t.ticketNumber}</span></td>
+                    <td><strong class="font-monospace">${t.vehicleNumber}</strong></td>
+                    <td>${t.ownerName}</td>
+                    <td><span class="badge bg-info text-dark">${t.vehicleType}</span></td>
+                    <td><span class="badge bg-teal text-white">${t.allocatedSlots}</span></td>
+                    <td class="small text-muted">${new Date(t.entryTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                    <td>₹${t.hourlyRate}/hr</td>
+                    <td>
+                        <a href="/vehicle-exit.html?ticket=${t.ticketNumber}" class="btn btn-sm btn-outline-danger py-0 px-2">Exit</a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Charts
+        const revCtx = document.getElementById('revenueChart');
+        if (revCtx) {
+            new Chart(revCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today'],
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: [150, 240, 180, 310, 290, 420, stats.totalRevenue],
+                        backgroundColor: '#0d9488',
+                        borderRadius: 6
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        const vehCtx = document.getElementById('vehicleTypeChart');
+        if (vehCtx) {
+            const cars = db.tickets.filter(t => t.vehicleType === 'CAR' && t.status === 'ACTIVE').length;
+            const bikes = db.tickets.filter(t => t.vehicleType === 'BIKE' && t.status === 'ACTIVE').length;
+            const trucks = db.tickets.filter(t => t.vehicleType === 'TRUCK' && t.status === 'ACTIVE').length;
+            new Chart(vehCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Cars', 'Bikes', 'Trucks'],
+                    datasets: [{
+                        data: [cars || 1, bikes || 1, trucks || 0],
+                        backgroundColor: ['#2563eb', '#0d9488', '#f59e0b']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+    }
+    document.addEventListener('DOMContentLoaded', renderDashboard);
+</script>
+
+
+</body>
+</html>
